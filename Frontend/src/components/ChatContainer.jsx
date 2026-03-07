@@ -45,7 +45,7 @@ const ChatContainer = () => {
           <div
             key={message._id}
             className={`chat ${
-              message.senderID?.toString() === authUser?._id?.toString()
+              message.senderId?.toString() === authUser?._id?.toString()
                 ? "chat-end"
                 : "chat-start"
             }`}
@@ -55,7 +55,7 @@ const ChatContainer = () => {
               <div className="size-10 rounded-full border">
                 <img
                   src={
-                    message.senderID?.toString() === authUser?._id?.toString()
+                    message.senderId?.toString() === authUser?._id?.toString()
                       ? authUser?.profilePic || "/avatar.png"
                       : selectedUser?.profilePic || "/avatar.png"
                   }
