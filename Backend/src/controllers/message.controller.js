@@ -16,13 +16,13 @@ export const getUsersForSidebar = async(req,res) =>{
 
 export const getMessages = async (req,res) => {
     try {
-        const { id:UserToChatId } = req.params
+        const { id: userToChatId } = req.params
         const myId = req.user._id;
         //function to find conversation between two users
         const messages = await Message.find({
             $or:[
-                {senderID:myId, receiverID: UserToChatId},
-                {senderID:UserToChatId, receiverID:myId },
+                { senderId: myId, receiverId: userToChatId },
+                { senderId: userToChatId, receiverId: myId },
             ]
         })
         res.status(200).json(messages)
@@ -34,29 +34,26 @@ export const getMessages = async (req,res) => {
 
 export const sendMessage = async (req,res) => {
     try {
-        const {text, image} = req.body;
-        const { id: receiverID} = req.params;
-        const senderID = req.user._id;
+        const { text, image } = req.body;
+        const { id: receiverId } = req.params;
+        const senderId = req.user._id;
 
         let imageUrl;
         if (image) {
-            //Upload image to cloudinary
             const uploadResponse = await cloudinary.uploader.upload(image);
             imageUrl = uploadResponse.secure_url;
         }
 
-        const newMessage = new Message(
-            {
-                senderID,
-                receiverID,
-                text,
-                image: imageUrl,
-            }
-        );
+        const newMessage = new Message({
+            senderId,
+            receiverId,
+            text,
+            image: imageUrl,
+        });
 
         await newMessage.save();
 
-        const receiverSocketId = getReceiverSocketId(receiverID); 
+        const receiverSocketId = getReceiverSocketId(receiverId); 
         if(receiverSocketId){
             io.to(receiverSocketId).emit("newMessage", newMessage);
         }

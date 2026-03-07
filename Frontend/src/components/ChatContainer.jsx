@@ -42,21 +42,19 @@ const ChatContainer = () => {
       <ChatHeader />
 
       <div className="flex-1 overflow-y-auto p-4 space-y-4">
-        {messages.map((message) => (
+        {messages.map((message) => {
+          const isOwnMessage = String(message.senderId) === String(authUser?._id);
+          return (
           <div
             key={message._id}
-            className={`chat ${
-              message.senderId?.toString() === authUser?._id?.toString()
-                ? "chat-end"
-                : "chat-start"
-            }`}
+            className={`chat ${isOwnMessage ? "chat-end" : "chat-start"}`}
             ref={messageEndRef}
           >
             <div className="chat-image avatar">
               <div className="size-10 rounded-full border">
                 <img
                   src={
-                    message.senderId?.toString() === authUser?._id?.toString()
+                    isOwnMessage
                       ? authUser?.profilePic || "/avatar.png"
                       : selectedUser?.profilePic || "/avatar.png"
                   }
@@ -82,7 +80,8 @@ const ChatContainer = () => {
               {message.text && <p>{message.text}</p>}
             </div>
           </div>
-        ))}
+          );
+        })}
       </div>
 
       <MessageInput />
